@@ -1,5 +1,8 @@
+var canvas;
+
 window.onload = function() {
-  var canvas = new AsciiCanvas(50, 20, function() {
-    // game loop
+  canvas = new AsciiCanvas(50, 20, function() {
+    document.getElementById("box").innerHTML = this.toString();
   });
+  canvas.start(300);
 }

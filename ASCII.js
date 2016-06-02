@@ -1,32 +1,91 @@
-var gameLoopFn;
-var gameLoopTimer;
-
 // Constructor for ASCII Canvas object
 function AsciiCanvas(width, height, fun) {
   this.width = width;
   this.height = height;
-  str = "";
-  for (var i = 0; i < height; i++) {
-    for (var j = 0; j < width; j++) {
-      str += "x";
-    }
-    str += "\n";
-  }
+  this.elements = [];
   this.gameLoopFn = fun;
-}
 
-function Start(interval) {
-  interval = interval || 0;
-  if (gameLoopTimer == null) {
-    gameLoopFn();
-    if (interval > 0)
-      gameLoopTimer = setInterval(gameLoopFn, interval);
+  this.add = function(str, x, y) {
+    x |= 0;
+    y |= 0;
+    var parsed = JSON.parse(str);
+    var el = new Element(parsed);
+    elements.push(el);
+    return el;
+  }
+
+  this.remove = function(el) {
+    this.elements.remove(el);
+  }
+
+  this.update = function() {
+    for (var i = 0; i < this.elements.length; i++) {
+      this.elements[i].nextFrame();
+    }
+  }
+
+  this.start = function(interval) {
+    this.gameLoopFn();
+    interval = interval || 0;
+    if (!this.gameLoopTimer) {
+      var canv = this;
+      if (interval > 0) {
+        gameLoopTimer = setInterval(function() {
+          canv.update();
+          canv.gameLoopFn();
+        }, interval);
+      }
+    }
+  }
+
+  this.stop = function() {
+    if (gameLoop) {
+      clearInterval(gameLoopTimer);
+      gameLoopTimer = null;
+    }
+  }
+
+  this.toString = function() {
+    var str = "";
+    for (var i = 0; i < this.height; i++) {
+      for (var j = 0; j < this.width; j++) {
+        str += "x";
+      }
+      if (i != this.height - 1)
+        str += "</br>";
+    }
+    return str;
   }
 }
 
-function Stop() {
-  if (gameLoop) {
-    clearInterval(gameLoopTimer);
-    gameLoopTimer = null;
+function Element(el) {
+  this.str = el.s;
+  this.width = el.w;
+  this.height = el.h;
+  this.frameCount = el.s.length / (el.w * el.h);
+  this.currentFrame = 0;
+  this.stopped = false;
+
+  // Go to the next frame
+  this.nextFrame = function() {
+    this.currentFrame = (this.currentFrame + 1) % this.frameCount;
   }
+
+  // Go to the prev frame
+  this.prevFrame = function() {
+    this.currentFrame--;
+    if (this.currentFrame < 0)
+      this.currentFrame = this.frameCount - 1;
+  }
+
+  // Goes to the given frame, if it's in the range.
+  // If it's outside the range, nothing happens
+  this.gotoFrame = function(frame) {
+    if (frame >= 0 && frame < this.frameCount)
+      this.frameCount = frame;
+  }
+
+  // The element will no longer advance
+  this.stop = function() { this.stopped = true; }
+  this.play = function() { this.stopped = false; }
 }
