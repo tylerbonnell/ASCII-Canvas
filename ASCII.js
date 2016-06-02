@@ -36,7 +36,7 @@ function AsciiCanvas(width, height, fun) {
 
   this.start = function(interval) {
     this.gameLoopFn();
-    interval = interval || 0;
+    interval |= 0;
     if (!this.gameLoopTimer) {
       var canv = this;
       if (interval > 0) {
@@ -62,6 +62,7 @@ function AsciiCanvas(width, height, fun) {
     }
     for (var i = 0; i < this.elements.length; i++) {
       var el = this.elements[i];
+      console.log(el);
       // get the frame from el, put it in the array
       for (var x = 0; x < el.width; x++) {
         if (el.x + x < this.cameraX || el.x + x >= this.width + this.cameraX)
@@ -69,7 +70,7 @@ function AsciiCanvas(width, height, fun) {
         for (var y = 0; y < el.height; y++) {
           if (el.y + y < this.cameraY || el.y + y >= this.height + this.cameraY)
             continue;
-          arr[el.x - this.cameraX][el.y - this.cameraY] = el.charAtPos(x, y);
+          arr[x + el.x - this.cameraX][y + el.y - this.cameraY] = el.charAtPos(x, y);
         }
       }
     }
@@ -81,6 +82,7 @@ function AsciiCanvas(width, height, fun) {
       if (i != this.height - 1)
         str += "</br>";
     }
+    console.log(arr);
     return str;
   }
 }
@@ -96,7 +98,7 @@ function Element(el, x, y) {
   this.stopped = false;
 
   this.charAtPos = function(x, y) {
-    return this.str[el.currentFrame * el.x * el.y + y * el.width + x];
+    return this.str.charAt(this.currentFrame * this.x * this.y + y * this.width + x);
   }
 
   // Go to the next frame
