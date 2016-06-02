@@ -8,9 +8,8 @@ function AsciiCanvas(width, height, fun) {
   this.add = function(str, x, y) {
     x |= 0;
     y |= 0;
-    var parsed = JSON.parse(str);
-    var el = new Element(parsed);
-    elements.push(el);
+    var el = new Element(str);
+    this.elements.push(el);
     return el;
   }
 
@@ -55,6 +54,17 @@ function AsciiCanvas(width, height, fun) {
         str += "</br>";
     }
     return str;
+  }
+
+  this.cameraX = 0;
+  this.cameraY = 0;
+  this.translateCamera = function(dx, dy) {
+    this.cameraX += dx;
+    this.cameraY += dy;
+  }
+  this.setCameraPos = function(x, y) {
+    this.cameraX = x;
+    this.cameraY = y;
   }
 }
 
