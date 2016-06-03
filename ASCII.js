@@ -83,7 +83,9 @@ function AsciiCanvas(width, height, fun) {
         for (var y = 0; y < el.height; y++) {
           if (el.y + y < this.cameraY || el.y + y >= this.height + this.cameraY)
             continue;
-          arr[x + el.x - this.cameraX][y + el.y - this.cameraY] = el.charAtPos(x, y);
+          var ch = el.charAtPos(x, y);
+          if (ch != ' ')
+            arr[x + el.x - this.cameraX][y + el.y - this.cameraY] = ch;
         }
       }
     }
@@ -113,9 +115,20 @@ function Element(el, x, y) {
   this.currentFrame = 0;
   this.stopped = false;
 
+  // gets the character at the local position for this object
+  // e.g. el.charAtPos(0, 0) returns the top left corner
   this.charAtPos = function(x, y) {
     return this.str.charAt(this.currentFrame * this.width * this.height + y * this.width + x);
   };
+
+  // gets the character at the global coordinates, returns
+  // null if the element doesn't occupy that space
+  this.charAtGlobalPos = function(x, y) {
+    if (x < this.x || x >= this.x + this.width ||
+        y < this.y || y >= this.y + this.height)
+      return null;
+    return this.charAtPos(x - this.x, y - this.y);
+  }
 
   // Go to the next frame
   this.nextFrame = function() {
@@ -150,7 +163,15 @@ function Element(el, x, y) {
 
   this.hitTestExact = function(other) {
     if (!this.hitTest(other)) return;
-    // TODO: fancy stuff to detect non-spaces colliding
+    for (var x = this.x; x < this.x + this.width; x++) {
+      for (var y = this.y; y < this.y + this.height; y++) {
+        var thisPt = this.charAtGlobalPos(x, y);
+        var otherPt = other.charAtGlobalPos(x, y);
+        if (thisPt != null && thisPt != ' ' && otherPt != null && otherPt != ' ')
+          return true;
+      }
+    }
+    return false;
   }
 
   // The element will no longer advance

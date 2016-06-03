@@ -1,4 +1,4 @@
-var el = {s:"axaxaxaxaxaxaxaxax",w:3,h:3};
+var el = {s:" x x x x ",w:3,h:3};
 
 var canvas;
 var a;
@@ -15,7 +15,7 @@ window.onload = function() {
       if (canvas.keyDown(87) || canvas.keyDown(38)) dy--;
       if (canvas.keyDown(83) || canvas.keyDown(40)) dy++;
       a.translate(dx, dy);
-      if (a.hitTest(b))
+      if (a.hitTestExact(b))
         a.translate(-dx, -dy);
     }
   });
