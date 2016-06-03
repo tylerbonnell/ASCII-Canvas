@@ -1,5 +1,18 @@
+var keysDown = [];
+
 // Constructor for ASCII Canvas object
 function AsciiCanvas(width, height, fun) {
+  document.querySelector("body").onkeydown = function(event) {
+    if (!keysDown.includes(event.keyCode))
+      keysDown.push(event.keyCode);
+  };
+
+  document.querySelector("body").onkeyup = function(event) {
+    var pos = keysDown.indexOf(event.keyCode);
+    if (pos > -1)
+      keysDown.splice(pos, 1);
+  };
+
   this.width = width;
   this.height = height;
   this.elements = [];
@@ -84,6 +97,10 @@ function AsciiCanvas(width, height, fun) {
     }
     return str;
   };
+
+  this.keyDown = function(key) {
+    return keysDown.includes(key);
+  }
 }
 
 function Element(el, x, y) {
@@ -129,6 +146,11 @@ function Element(el, x, y) {
     if (!other) return;
     return !(this.x + this.width <= other.x || this.x >= other.x + other.width ||
              this.y + this.height <= other.y || this.y >= other.y + other.height);
+  }
+
+  this.hitTestExact = function(other) {
+    if (!this.hitTest(other)) return;
+    // TODO: fancy stuff to detect non-spaces colliding
   }
 
   // The element will no longer advance
