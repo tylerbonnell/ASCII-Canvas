@@ -30,7 +30,8 @@ function AsciiCanvas(width, height, fun) {
 
   this.update = function() {
     for (var i = 0; i < this.elements.length; i++) {
-      this.elements[i].nextFrame();
+      if (!this.elements[i].stopped)
+        this.elements[i].nextFrame();
     }
   };
 
@@ -123,6 +124,12 @@ function Element(el, x, y) {
     this.y = y;
   };
   this.translate = function(dx, dy) { this.moveTo(this.x + dx, this.y + dy); };
+
+  this.hitTest = function(other) {
+    if (!other) return;
+    return !(this.x + this.width <= other.x || this.x >= other.x + other.width ||
+             this.y + this.height <= other.y || this.y >= other.y + other.height);
+  }
 
   // The element will no longer advance
   this.stop = function() { this.stopped = true; };
