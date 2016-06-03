@@ -1,4 +1,4 @@
-var el = {s:" x xxx x ",w:3,h:3};
+var el = {s:" o ooo o ",w:3,h:3};
 
 var canvas;
 var a;

@@ -29,18 +29,24 @@ function AsciiCanvas(width, height, fun) {
     this.cameraY = y;
   };
 
-  this.add = function(str, x, y) {
+  // Adds the given "el" (assumed to be in the correct format)
+  // to the canvas and returns the newly constructed element
+  // Adds the el to the world at coordinates (x, y). Both x and
+  // y default to 0 if not provided.
+  this.add = function(el, x, y) {
     x |= 0;
     y |= 0;
-    var el = new Element(str, x, y);
-    this.elements.push(el);
-    return el;
+    var element = new Element(el, x, y);
+    this.elements.push(element);
+    return element;
   };
 
+  // Removes the given element from the canvas
   this.remove = function(el) {
     this.elements.remove(el);
   };
 
+  // Advances all currently playing elements to the next frame
   this.update = function() {
     for (var i = 0; i < this.elements.length; i++) {
       if (!this.elements[i].stopped)
@@ -48,6 +54,11 @@ function AsciiCanvas(width, height, fun) {
     }
   };
 
+  // Starts the canvas. You should call this after adding all
+  // your initial elements. Calls the given gameLoopFn once,
+  // and if interval is > 0, creates a loop for executing the
+  // gameLoopFn at the given interval. Every interval, also
+  // advances all currently playing elements to the next frame.
   this.start = function(interval) {
     this.gameLoopFn();
     interval |= 0;
@@ -62,6 +73,7 @@ function AsciiCanvas(width, height, fun) {
     }
   };
 
+  // Stops the current loop, if there is one
   this.stop = function() {
     if (this.gameLoopTimer) {
       clearInterval(this.gameLoopTimer);
@@ -69,6 +81,8 @@ function AsciiCanvas(width, height, fun) {
     }
   };
 
+  // Returns a grid representation based on what the camera
+  // is viewing, with each line separated by </br> tags
   this.toString = function() {
     var arr = new Array(this.width);
     for (var i = 0; i < arr.length; i++) {
@@ -100,11 +114,16 @@ function AsciiCanvas(width, height, fun) {
     return str;
   };
 
+  // Returns whether or not the current key is held down.
+  // The canvas puts key listeners on the page's body, so
+  // you should use this instead of making your own listener.
   this.keyDown = function(key) {
     return keysDown.includes(key);
   }
 }
 
+// Constructor for an Element object, which represents
+// any object that is currently on the canvas.
 function Element(el, x, y) {
   this.str = el.s;
   this.x = x;
@@ -149,18 +168,24 @@ function Element(el, x, y) {
       this.frameCount = frame;
   };
 
+  // Moves the element to the given world coordinates
   this.moveTo = function(x, y) {
     this.x = x;
     this.y = y;
   };
   this.translate = function(dx, dy) { this.moveTo(this.x + dx, this.y + dy); };
 
+  // Returns whether the bounding boxes of this and the given
+  // other element overlap at all
   this.hitTest = function(other) {
     if (!other) return;
     return !(this.x + this.width <= other.x || this.x >= other.x + other.width ||
              this.y + this.height <= other.y || this.y >= other.y + other.height);
   }
 
+  // Tests if this element is intersecting with another element
+  // in a more precise manner than hitTest. If the two elements
+  // have overlapping non-whitespace characters, returns true
   this.hitTestExact = function(other) {
     if (!this.hitTest(other)) return;
     for (var x = this.x; x < this.x + this.width; x++) {
@@ -174,7 +199,8 @@ function Element(el, x, y) {
     return false;
   }
 
-  // The element will no longer advance
+  // The element will no longer advance its frame on update
   this.stop = function() { this.stopped = true; };
+  // The element will advance its frame on update
   this.play = function() { this.stopped = false; };
 }
