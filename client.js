@@ -5,7 +5,7 @@ var a;
 var b;
 window.onload = function() {
   canvas = new AsciiCanvas(60, 40, function() {
-    if (a) {
+    if (a && b) {
       var dx = 0;
       var dy = 0;
       if (canvas.keyDown(65) || canvas.keyDown(37)) dx--;
@@ -13,7 +13,10 @@ window.onload = function() {
       if (canvas.keyDown(87) || canvas.keyDown(38)) dy--;
       if (canvas.keyDown(83) || canvas.keyDown(40)) dy++;
       a.translate(dx, dy);
-      if (a.hitTestExact(b)) {
+      if (a.collideTopExact(b)) {
+        console.log("shit");
+      }
+      /*if (a.hitTestExact(b)) {
         a.translate(-dx, -dy);
         a.translate(dx, 0);
         if (a.hitTestExact(b)) {
@@ -22,12 +25,12 @@ window.onload = function() {
             a.translate(0, -dy);
           }
         }
-      }
+      }*/
     }
 
     document.getElementById("box").innerHTML = this;
   });
   a = canvas.add(el);
   b = canvas.add(el, 5, 5);
-  canvas.start(1000/30);
+  canvas.start(1000/5);
 }

@@ -141,12 +141,14 @@ function Element(el, x, y) {
   };
 
   // gets the character at the global coordinates, returns
-  // null if the element doesn't occupy that space
+  // null if the element doesn't occupy that space or the
+  // character stored is the space character
   this.charAtGlobalPos = function(x, y) {
     if (x < this.x || x >= this.x + this.width ||
         y < this.y || y >= this.y + this.height)
       return null;
-    return this.charAtPos(x - this.x, y - this.y);
+    var ch = this.charAtPos(x - this.x, y - this.y);
+    return ch == ' ' ? null : ch;
   }
 
   // Go to the next frame
@@ -181,7 +183,7 @@ function Element(el, x, y) {
     if (!other) return;
     return !(this.x + this.width <= other.x || this.x >= other.x + other.width ||
              this.y + this.height <= other.y || this.y >= other.y + other.height);
-  }
+  };
 
   // Tests if this element is intersecting with another element
   // in a more precise manner than hitTest. If the two elements
@@ -197,7 +199,43 @@ function Element(el, x, y) {
       }
     }
     return false;
+  };
+
+  this.collideBottom = function(other) {
+    return this.x > other.x - this.width &&  this.y == other.y - this.height;
+  };
+
+  this.collideBottomExact = function(other) {
+    for (var x = 0; x < this.width; x++) {  // x coord on this
+      if (this.x + x < other.x - 1 || this.x + x >= other.x + other.width)
+        continue;
+      for (var y = this.height - 1; y >= 0; y--) {  // y coord on this
+        if (this.y + y < other.y - 1 || this.y + y >= other.y + other.height)
+          continue;
+        // this object has a character that is 1 pixel above a character on other
+        if (this.charAtGlobalPos(this.x + x, this.y + y) != null &&
+            other.charAtGlobalPos(this.x + x, this.y + y + 1) != null)
+          return true;
+      }
+    }
+    return false;
   }
+
+  this.collideTop = function(other) { return other.collideBottom(this); };
+
+  this.collideTopExact = function(other) { return other.collideBottomExact(this); }
+
+  this.collideRight = function(other) {
+    return;
+  };
+
+  this.collideRightExact = function(other) {
+
+  }
+
+  this.collideLeft = function(other) { return other.collideRight(this); };
+
+  this.collideLeftExact = function(other) { return other.collideRightExact(this); }
 
   // The element will no longer advance its frame on update
   this.stop = function() { this.stopped = true; };
