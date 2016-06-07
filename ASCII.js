@@ -227,7 +227,8 @@ function Element(el, x, y) {
   this.collideTopExact = function(other) { return other.collideBottomExact(this); }
 
   this.collideRight = function(other) {
-    return this.x + this.width == other.x;
+    return this.y > other.y - this.height && this.y < other.y + other.height &&
+           this.x == other.x - this.width;
   };
 
   this.collideRightExact = function(other) {
