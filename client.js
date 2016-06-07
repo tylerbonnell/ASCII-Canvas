@@ -13,9 +13,6 @@ window.onload = function() {
       if (canvas.keyDown(87) || canvas.keyDown(38)) dy--;
       if (canvas.keyDown(83) || canvas.keyDown(40)) dy++;
       a.translate(dx, dy);
-      if (a.collideRightExact(b)) {
-        console.log("shit");
-      }
       /*if (a.hitTestExact(b)) {
         a.translate(-dx, -dy);
         a.translate(dx, 0);
