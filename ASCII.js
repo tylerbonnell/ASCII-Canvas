@@ -201,11 +201,21 @@ function Element(el, x, y) {
     return false;
   };
 
+  // Returns true if the bounding box of this rests on top of the bounding
+  // box of other at any point
+  //
+  //  Examples:   +--+                      +--+
+  //              |  |   returns true, but  |  |  +--+  returns false.
+  //              +-++-+                    +--+  |  |
+  //                |  |                          +--+
+  //                +--+
   this.collideBottom = function(other) {
     return this.x > other.x - this.width && this.x < other.x + other.width &&
            this.y == other.y - this.height;
   };
 
+  // Returns true if any non-null and non-space characters rest on top of
+  // a non-null or non-space character of other
   this.collideBottomExact = function(other) {
     for (var x = 0; x < this.width; x++) {  // x coord on this
       if (this.x + x < other.x - 1 || this.x + x >= other.x + other.width)
