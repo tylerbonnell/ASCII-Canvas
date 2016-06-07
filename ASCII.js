@@ -202,7 +202,8 @@ function Element(el, x, y) {
   };
 
   this.collideBottom = function(other) {
-    return this.x > other.x - this.width &&  this.y == other.y - this.height;
+    return this.x > other.x - this.width && this.x < other.x + other.width &&
+           this.y == other.y - this.height;
   };
 
   this.collideBottomExact = function(other) {
@@ -226,11 +227,23 @@ function Element(el, x, y) {
   this.collideTopExact = function(other) { return other.collideBottomExact(this); }
 
   this.collideRight = function(other) {
-    return;
+    return this.x + this.width == other.x;
   };
 
   this.collideRightExact = function(other) {
-
+    for (var x = 0; x < this.width; x++) {  // x coord on this
+      if (this.x + x < other.x - 1 || this.x + x >= other.x + other.width)
+        continue;
+      for (var y = this.height - 1; y >= 0; y--) {  // y coord on this
+        if (this.y + y < other.y - 1 || this.y + y >= other.y + other.height)
+          continue;
+        // this object has a character that is 1 pixel to the right of a character on other
+        if (this.charAtGlobalPos(this.x + x, this.y + y) != null &&
+            other.charAtGlobalPos(this.x + x + 1, this.y + y) != null)
+          return true;
+      }
+    }
+    return false;
   }
 
   this.collideLeft = function(other) { return other.collideRight(this); };
