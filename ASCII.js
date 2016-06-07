@@ -1,7 +1,7 @@
 var keysDown = [];
 
 // Constructor for ASCII Canvas object
-function AsciiCanvas(width, height, fun) {
+function AsciiCanvas(width, height) {
   document.querySelector("body").onkeydown = function(event) {
     if (!keysDown.includes(event.keyCode))
       keysDown.push(event.keyCode);
@@ -16,7 +16,6 @@ function AsciiCanvas(width, height, fun) {
   this.width = width;
   this.height = height;
   this.elements = [];
-  this.gameLoopFn = fun;
 
   this.cameraX = 0;
   this.cameraY = 0;
@@ -59,7 +58,7 @@ function AsciiCanvas(width, height, fun) {
   // and if interval is > 0, creates a loop for executing the
   // gameLoopFn at the given interval. Every interval, also
   // advances all currently playing elements to the next frame.
-  this.start = function(interval) {
+  /*this.start = function(interval) {
     this.gameLoopFn();
     interval |= 0;
     if (!this.gameLoopTimer) {
@@ -79,7 +78,7 @@ function AsciiCanvas(width, height, fun) {
       clearInterval(this.gameLoopTimer);
       this.gameLoopTimer = null;
     }
-  };
+  };*/
 
   // Returns a grid representation based on what the camera
   // is viewing, with each line separated by </br> tags
